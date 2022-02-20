@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>preview</AnalysisLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Shim.System.Numerics" Version="6.0.0" Condition="'$(TargetFramework)' == 'netstandard2.1'" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+</Project>

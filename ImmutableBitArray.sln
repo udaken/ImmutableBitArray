@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmutableBitArray", "src\ImmutableBitArray.csproj", "{24C67832-D10B-4791-AB3A-542165839835}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject1", "tests\TestProject1.csproj", "{8254F448-2FCB-4609-95A4-5216E3FD8A84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24C67832-D10B-4791-AB3A-542165839835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24C67832-D10B-4791-AB3A-542165839835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24C67832-D10B-4791-AB3A-542165839835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24C67832-D10B-4791-AB3A-542165839835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8254F448-2FCB-4609-95A4-5216E3FD8A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8254F448-2FCB-4609-95A4-5216E3FD8A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8254F448-2FCB-4609-95A4-5216E3FD8A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8254F448-2FCB-4609-95A4-5216E3FD8A84}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76EE2933-DFA1-47AD-A80C-17C366A199C7}
+	EndGlobalSection
+EndGlobal
