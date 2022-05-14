@@ -101,14 +101,16 @@ namespace Collections.Immutable.Tests
         public static void GetEnumerator_Invalid(int size)
         {
             ImmutableBitArray bitArray = ImmutableBitArray.Create(size, true);
-            IEnumerator enumerator = bitArray.GetEnumerator();
+            IEnumerator<bool> enumerator = bitArray.GetEnumerator();
 
             // Has not started enumerating
             Assert.Throws<InvalidOperationException>(() => enumerator.Current);
 
             // Has finished enumerating
             while (enumerator.MoveNext())
-                ;
+            {
+            }
+
             Assert.Throws<InvalidOperationException>(() => enumerator.Current);
 
             // Has resetted enumerating
@@ -120,7 +122,7 @@ namespace Collections.Immutable.Tests
             {
                 enumerator.MoveNext();
                 bitArray = bitArray.Set(0, false);
-                Assert.True((bool)enumerator.Current);
+                Assert.True(enumerator.Current);
             }
         }
 
@@ -128,7 +130,7 @@ namespace Collections.Immutable.Tests
         public static void GetEnumerator_CloneEnumerator_ReturnsUniqueEnumerator()
         {
             ImmutableBitArray bitArray = ImmutableBitArray.Create(1);
-            IEnumerator enumerator = bitArray.GetEnumerator();
+            IEnumerator<bool> enumerator = bitArray.GetEnumerator();
             ICloneable cloneableEnumerator = (ICloneable)enumerator;
             Assert.NotNull(cloneableEnumerator);
 

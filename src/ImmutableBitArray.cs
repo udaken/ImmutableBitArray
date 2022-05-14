@@ -20,7 +20,7 @@ namespace Collections.Immutable
 {
     // A vector of bits.  Use this to store bits efficiently, without having to do bit
     // shifting yourself.
-    public readonly struct ImmutableBitArray : IEquatable<ImmutableBitArray>, IEnumerable<bool>
+    public readonly struct ImmutableBitArray : IEquatable<ImmutableBitArray>, IEnumerable<bool>, IReadOnlyList<bool>
     {
         private const int BitsOfBackField = sizeof(long) * BitsPerByte;
         private const int PreallocatedArrayLength = 256;
@@ -38,7 +38,6 @@ namespace Collections.Immutable
         private readonly long m_backfield;
         private readonly int[]? m_array;
         private readonly int m_bitlength;
-
 
         static ImmutableBitArray()
         {
@@ -695,6 +694,11 @@ namespace Collections.Immutable
         =========================================================================*/
         public unsafe ImmutableBitArray Not()
         {
+            if (m_array == s_AllMinusOne)
+                return new ImmutableBitArray(m_backfield, s_AllZero, m_bitlength);
+            else if (m_array == s_AllZero)
+                return new ImmutableBitArray(m_backfield, s_AllMinusOne, m_bitlength);
+
             (var backfield, var array, var length) = this;
             var thisArray = GetMutableSpan(ref backfield, array);
             int count = GetInt32ArrayLengthFromBitLength(Length);
@@ -908,15 +912,10 @@ namespace Collections.Immutable
             return true;
         }
 
-        public bool IsAllZero
-        {
-            get
-            {
-                return m_array == s_AllZero || (m_array != s_AllMinusOne && CompareToSequence(s_AllZero));
-            }
-        }
 
         public int Length => m_bitlength;
+
+        int IReadOnlyCollection<bool>.Count => Length;
 
         public ImmutableBitArray Resize(int length)
         {
@@ -1151,7 +1150,7 @@ namespace Collections.Immutable
             }
 #endif
 
-        LessThan32:
+            LessThan32:
             for (; i < (uint)m_bitlength; i++)
             {
                 int elementIndex = Div32Rem((int)i, out int extraBits);
@@ -1161,6 +1160,9 @@ namespace Collections.Immutable
 
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         {
+            if (!format.IsEmpty)
+                throw new ArgumentException("format must empty", nameof(format));
+
             int len = 2 + m_bitlength;
             if (destination.Length < len)
             {
@@ -1182,7 +1184,7 @@ namespace Collections.Immutable
             if (m_bitlength == 0)
                 return String.Empty;
 
-            return string.Create(2 + m_bitlength, this, (chars, self) =>
+            return string.Create(2 + m_bitlength, this, static (chars, self) =>
             {
                 var success = self.TryFormat(chars, out var _, default, default);
                 Debug.Assert(success);
@@ -1192,23 +1194,21 @@ namespace Collections.Immutable
 
         public int PopCount()
         {
+            if (m_bitlength <= BitsOfBackField)
             {
-                if (m_bitlength <= BitsOfBackField)
-                {
-                    return BitOperations.PopCount((ulong)m_backfield);
-                }
-
-                int count = 0;
-                var span = AsInt32Span();
-                for (var i = 0; i < span.Length; i++)
-                {
-                    uint value = (i == span.Length - 1) ?
-                        ((uint)(span[i] & ((1 << (m_bitlength & 0b11111)) - 1))) :
-                        ((uint)span[i]);
-                    count += BitOperations.PopCount(value);
-                }
-                return Math.Min(count, m_bitlength);
+                return BitOperations.PopCount((ulong)m_backfield);
             }
+
+            int count = 0;
+            var span = AsInt32Span();
+            for (var i = 0; i < span.Length; i++)
+            {
+                uint value = (i == span.Length - 1) ?
+                    ((uint)(span[i] & ((1 << (m_bitlength & 0b11111)) - 1))) :
+                    ((uint)span[i]);
+                count += BitOperations.PopCount(value);
+            }
+            return Math.Min(count, m_bitlength);
         }
 
         //public ImmutableBitArray Slice(Range range) => throw new NotImplementedException();
@@ -1301,9 +1301,7 @@ namespace Collections.Immutable
         }
 
         public static bool operator ==(ImmutableBitArray left, ImmutableBitArray right) => left.Equals(right);
-
         public static bool operator !=(ImmutableBitArray left, ImmutableBitArray right) => !(left == right);
-
 
         public IEnumerator<bool> GetEnumerator()
         {
